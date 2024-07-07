@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 // Ajouter une page d'admin pour télécharger le fichier DOCX
 add_action('admin_menu', 'docx_to_html_menu');
 function docx_to_html_menu() {
-    add_menu_page('DOCX to HTML', 'DOCX to HTML', 'manage_options', 'docx-to-html', 'docx_to_html_page');
+    add_menu_page('Docx vers Article', 'Docx vers Article', 'manage_options', 'docx-to-html', 'docx_to_html_page');
 }
 
 // Ajoute la view upload-form
@@ -52,6 +52,7 @@ function convert_docx_to_html() {
 }
 
 
+
 // Fonction qui ajoute un post via HTML recu en ajax
 add_action('wp_ajax_create_post_from_html', 'create_post_from_html');
 function create_post_from_html() {
@@ -59,6 +60,8 @@ function create_post_from_html() {
 
     $content = isset($_POST['content']) ? wp_kses_post($_POST['content'])  : '';
     $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : 'Post from DOCX';
+
+
     if (empty($content) || empty($title)) {
         wp_send_json_error('Empty content.');
     }
@@ -83,7 +86,7 @@ function create_post_from_html() {
         wp_send_json_error($post_id->get_error_message());
     }
 
-    wp_send_json_success('Post created successfully.');
+    wp_send_json_success('Le post a été crée avec succes.');
 }
 
 // Modifie le style du titre

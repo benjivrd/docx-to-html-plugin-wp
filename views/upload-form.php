@@ -1,13 +1,13 @@
 <div class="wrap">
-    <h1>DOCX to HTML Converter</h1>
+    <h1>Ajouter un nouveau article via un fichier docx</h1>
     <form id="docx-to-html-form" method="post" enctype="multipart/form-data">
         <input type="file" id="docx_file" name="docx_file" />
         <input type="submit" name="preview" value="Preview" />
     </form>
     <div id="conversion-result" style="display:none;">
-        <h2>Conversion Result</h2>
+        <h2>Resultat</h2>
         <div id="html-content" class="docx-to-html-content"></div>
-        <button id="create-post">Create Post</button>
+        <button id="create-post">crée un post</button>
     </div>
 </div>
 <style>
