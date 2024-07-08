@@ -5,6 +5,8 @@ jQuery(document).ready(function ($) {
   $("#docx-to-html-form").on("submit", function (e) {
     e.preventDefault();
 
+    $("#loading-indicator").show();
+
     var formData = new FormData(this);
     formData.append("action", "convert_docx_to_html");
     formData.append("nonce", docxToHtml.nonce);
@@ -19,6 +21,7 @@ jQuery(document).ready(function ($) {
       processData: false,
       contentType: false,
       success: function (response) {
+        $("#loading-indicator").hide();
         if (response.success) {
           var arrayBuffer = base64ToArrayBuffer(response.data.file_content);
           mammoth
@@ -30,6 +33,10 @@ jQuery(document).ready(function ($) {
         } else {
           alert("Error: " + response.data);
         }
+      },
+      error: function () {
+        $("#loading-indicator").hide(); // Masquer l'indicateur de chargement en cas d'erreur
+        alert("Une erreur est survenue.");
       },
     });
   });
@@ -68,6 +75,7 @@ jQuery(document).ready(function ($) {
   }
 
   $("#create-post").on("click", function () {
+    $("#loading-indicator").show();
     var content = $("#html-content").html();
     var categories = $("#categories").val();
 
@@ -82,6 +90,7 @@ jQuery(document).ready(function ($) {
         categories: categories,
       },
       success: function (response) {
+        $("#loading-indicator").hide();
         var messageDiv = $("#post-message");
         if (response.success) {
           messageDiv.html(
@@ -95,6 +104,7 @@ jQuery(document).ready(function ($) {
         messageDiv.show();
       },
       error: function () {
+        $("#loading-indicator").hide();
         var messageDiv = $("#post-message");
         messageDiv.html(
           "<div class='error msg-custom'>Une erreur inconnu est survenu.</div>"

@@ -26,6 +26,9 @@
         <button id="create-post">crée un post</button>
     </div>
     <div id="post-message" style="display:none;"></div>
+    <div id="loading-indicator" style="display: none;">
+        <div class="loading"></div>
+    </div>
 </div>
 <style>
 /* Général */
@@ -34,6 +37,31 @@ body {
     background-color: #f7f7f7;
     margin: 0;
     padding: 0;
+}
+#loading-indicator{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    margin-top: 15px;
+}
+.loading {
+    border: 5px solid #4f94d4;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border-left-color: rgb(255, 255, 255);
+    animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .wrap {
