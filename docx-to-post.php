@@ -53,13 +53,12 @@ function convert_docx_to_html() {
     $file_content = file_get_contents($_FILES['docx_file']['tmp_name']);
     $response = array('file_content' => base64_encode($file_content));
 
-    // Handle image uploads
     if (isset($_FILES['image_files'])) {
         $image_urls = array();
         foreach ($_FILES['image_files']['tmp_name'] as $key => $tmp_name) {
             $image_type = wp_check_filetype($_FILES['image_files']['name'][$key]);
             if (!in_array($image_type['ext'], array('jpg', 'jpeg', 'png', 'gif'))) {
-                continue; // Skip invalid image types
+                continue; 
             }
             $upload = wp_upload_bits($_FILES['image_files']['name'][$key], null, file_get_contents($tmp_name));
             if (!$upload['error']) {
@@ -67,6 +66,21 @@ function convert_docx_to_html() {
             }
         }
         $response['image_urls'] = $image_urls;
+    }
+
+    if (isset($_FILES['featured_image'])) {
+        $featured_image_url = "";
+        $featured_image_type = wp_check_filetype($_FILES['featured_image']['name']);
+        if (in_array($featured_image_type['ext'], array('jpg', 'jpeg', 'png', 'gif'))) {
+            $upload = wp_upload_bits($_FILES['featured_image']['name'], null, file_get_contents($_FILES['featured_image']['tmp_name']));
+            if (!$upload['error']) {
+                $featured_image_url = $upload['url'];
+            }
+        }
+        else{
+            wp_send_json_error('File upload error.'); 
+        }
+        $response['featured_image_url'] = $featured_image_url;
     }
 
     wp_send_json_success($response);
@@ -82,7 +96,7 @@ function create_post_from_html() {
         wp_send_json_error('You do not have permission to create posts.');
     }
 
-    $content = isset($_POST['content']) ? wp_kses_post($_POST['content'])  : '';
+    $content = isset($_POST['content']) ? $_POST['content'] : '';
     $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : 'Post from DOCX';
     $categories = isset($_POST['categories']) ? array_map('intval', $_POST['categories']) : array();
 
@@ -114,30 +128,13 @@ function create_post_from_html() {
     }
 
     
-    // Handle featured image upload
-    if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
-        $upload = wp_upload_bits($_FILES['featured_image']['name'], null, file_get_contents($_FILES['featured_image']['tmp_name']));
-        if (!$upload['error']) {
-            $attachment = array(
-                'post_mime_type' => $upload['type'],
-                'post_title'     => sanitize_file_name($upload['file']),
-                'post_content'   => '',
-                'post_status'    => 'inherit'
-            );
-            $attachment_id = wp_insert_attachment($attachment, $upload['file'], $post_id);
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
-            $attach_data = wp_generate_attachment_metadata($attachment_id, $upload['file']);
-            wp_update_attachment_metadata($attachment_id, $attach_data);
-            set_post_thumbnail($post_id, $attachment_id);
-        }
-    }
 
     wp_send_json_success('Le post a été crée avec succes.');
 }
 
 // Modifie le style du titre
 function custom_article_title($title) {
-    if (is_single() && in_the_loop() && is_main_query()) {
+    if (in_the_loop()) {
         return '<div id="title-custom" class="custom-article-title alignfull">' . $title . '</div>';
     }
     return $title;

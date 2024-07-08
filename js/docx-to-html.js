@@ -1,7 +1,5 @@
 jQuery(document).ready(function ($) {
   var fileName = "";
-  var imageFiles = [];
-
   $("#docx-to-html-form").on("submit", function (e) {
     e.preventDefault();
 
@@ -12,7 +10,6 @@ jQuery(document).ready(function ($) {
     formData.append("nonce", docxToHtml.nonce);
 
     fileName = $("#docx_file")[0].files[0].name;
-    imageFiles = $("#image_files")[0].files;
 
     $.ajax({
       url: docxToHtml.ajax_url,
@@ -27,7 +24,11 @@ jQuery(document).ready(function ($) {
           mammoth
             .convertToHtml({ arrayBuffer: arrayBuffer })
             .then(function (result) {
-              displayResult(result, response.data.image_urls);
+              displayResult(
+                result,
+                response.data.image_urls,
+                response.data.featured_image_url
+              );
             })
             .catch(handleError);
         } else {
@@ -51,14 +52,14 @@ jQuery(document).ready(function ($) {
     return bytes.buffer;
   }
 
-  function displayResult(result, imageUrls) {
+  function displayResult(result, imageUrls, featuredImageUrl) {
     var htmlContent = result.value;
-
+    htmlContent += `<div id='featured-image' class='featured-image hide' style='background-image: radial-gradient(circle at right, rgba(255, 255, 255, 0) 0%, #f9fafc 100%), url(${featuredImageUrl})'></div>`;
     htmlContent += "<div class='custom-img'>";
     // Append images to the HTML content
     if (imageUrls && imageUrls.length > 0) {
       imageUrls.forEach(function (url) {
-        htmlContent += '<img src="' + url + '" draggable="true" />';
+        htmlContent += '<img src="' + url + '"/>';
       });
     }
 
@@ -76,6 +77,7 @@ jQuery(document).ready(function ($) {
 
   $("#create-post").on("click", function () {
     $("#loading-indicator").show();
+    $("#featured-image").removeClass("hide");
     var content = $("#html-content").html();
     var categories = $("#categories").val();
 

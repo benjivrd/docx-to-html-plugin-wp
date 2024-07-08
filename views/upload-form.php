@@ -1,6 +1,6 @@
 <div class="wrap">
-    <h1>Ajouter un nouveau article via un fichier docx</h1>
     <form id="docx-to-html-form" method="post" enctype="multipart/form-data">
+        <h1>Ajouter un nouveau article via un fichier docx</h1>
         <label for="docx_file">Choisir un fichier docx</label>
         <input type="file" id="docx_file" name="docx_file" />
         <label for="image_files[]">Choisir des images</label>
@@ -21,7 +21,6 @@
         <input type="submit" name="preview" value="Preview" />
     </form>
     <div id="conversion-result" style="display:none;">
-        <h2>Resultat</h2>
         <div id="html-content" class="docx-to-html-content"></div>
         <button id="create-post">crée un post</button>
     </div>
@@ -62,6 +61,19 @@ body {
     100% {
         transform: rotate(360deg);
     }
+}
+
+.featured-image.hide {
+    display: none;
+}
+
+.featured-image {
+    background-position: right 0px center;
+    width: 100%;
+    height: 387px;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .wrap {
