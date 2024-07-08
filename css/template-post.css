@@ -15,6 +15,7 @@
     color: #1489e4 !important;
 }
 
+
 .docx-to-html-content p {
     font-size: 14px;
     color: #666;
@@ -29,7 +30,6 @@
     margin-left: 35px;
 }
 
-
 .custom-article-title {
     font-family: Allura, handwriting;
     font-weight: 700;
@@ -41,12 +41,18 @@
     text-shadow: 0 0 .3em #000;
 }
 
-.docx-to-html-content img {
+.docx-to-html-content .custom-img {
+    display: flex;
+    padding-right: var(--wp--style--root--padding-right);
+    padding-left: var(--wp--style--root--padding-left);
+}
+
+.docx-to-html-content .custom-img img {
     display: inline-block;
     position: relative;
     max-width: 100%;
-    width: 300px;
-    height: 400px;
+    width: 400px;
+    height: 200px;
     margin: 5px;
     border-radius: 7px 7px 7px 7px !important;
     overflow: hidden !important;

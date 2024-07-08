@@ -1,7 +1,23 @@
 <div class="wrap">
     <h1>Ajouter un nouveau article via un fichier docx</h1>
     <form id="docx-to-html-form" method="post" enctype="multipart/form-data">
+        <label for="docx_file">Choisir un fichier docx</label>
         <input type="file" id="docx_file" name="docx_file" />
+        <label for="image_files[]">Choisir des images</label>
+        <input type="file" id="image_files" name="image_files[]" multiple />
+         <div id="featured-image-upload">
+            <label for="featured_image">Background image:</label>
+            <input type="file" id="featured_image" name="featured_image" />
+        </div>
+        <label for="categories">Choisir des catégories</label>
+        <select id="categories" name="categories[]" multiple>
+            <?php
+            $categories = get_categories();
+            foreach ($categories as $category) {
+                echo '<option value="' . $category->term_id . '">' . $category->name . '</option>';
+            }
+            ?>
+        </select>
         <input type="submit" name="preview" value="Preview" />
     </form>
     <div id="conversion-result" style="display:none;">
@@ -9,8 +25,133 @@
         <div id="html-content" class="docx-to-html-content"></div>
         <button id="create-post">crée un post</button>
     </div>
+    <div id="post-message" style="display:none;"></div>
 </div>
 <style>
+/* Général */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.wrap {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.msg-custom{
+    font-size: 20px;
+    height: 30px;
+    align-content: center;
+}
+
+/* Formulaire */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="file"],
+select,
+input[type="submit"] {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+input[type="file"]:focus,
+select:focus,
+input[type="submit"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Catégories */
+select {
+    height: 100px;
+    overflow-y: auto;
+}
+
+/* Résultat de la conversion */
+#conversion-result {
+    display: none;
+    margin-top: 20px;
+}
+
+#conversion-result h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#html-content {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+#html-content p {
+    margin: 0 0 10px;
+}
+
+button#create-post {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button#create-post:hover {
+    background-color: #218838;
+}
+
+
+
 .docx-to-html-content {
     font-family: 'Open Sans', Arial, sans-serif;
     line-height: 1.6;
@@ -53,12 +194,16 @@
     text-shadow: 0 0 .3em #000;
 }
 
-.docx-to-html-content img {
+.docx-to-html-content .custom-img{
+    display: flex;
+}
+
+.docx-to-html-content .custom-img img {
     display: inline-block;
     position: relative;
     max-width: 100%;
-    width: 300px;
-    height: 400px;
+    width: 400px;
+    height: 200px;
     margin: 5px;
     border-radius: 7px 7px 7px 7px !important;
     overflow: hidden !important;

@@ -1,5 +1,7 @@
 jQuery(document).ready(function ($) {
   var fileName = "";
+  var imageFiles = [];
+
   $("#docx-to-html-form").on("submit", function (e) {
     e.preventDefault();
 
@@ -8,6 +10,7 @@ jQuery(document).ready(function ($) {
     formData.append("nonce", docxToHtml.nonce);
 
     fileName = $("#docx_file")[0].files[0].name;
+    imageFiles = $("#image_files")[0].files;
 
     $.ajax({
       url: docxToHtml.ajax_url,
@@ -20,7 +23,9 @@ jQuery(document).ready(function ($) {
           var arrayBuffer = base64ToArrayBuffer(response.data.file_content);
           mammoth
             .convertToHtml({ arrayBuffer: arrayBuffer })
-            .then(displayResult)
+            .then(function (result) {
+              displayResult(result, response.data.image_urls);
+            })
             .catch(handleError);
         } else {
           alert("Error: " + response.data);
@@ -39,9 +44,22 @@ jQuery(document).ready(function ($) {
     return bytes.buffer;
   }
 
-  function displayResult(result) {
-    $("#html-content").html(result.value);
+  function displayResult(result, imageUrls) {
+    var htmlContent = result.value;
+
+    htmlContent += "<div class='custom-img'>";
+    // Append images to the HTML content
+    if (imageUrls && imageUrls.length > 0) {
+      imageUrls.forEach(function (url) {
+        htmlContent += '<img src="' + url + '" draggable="true" />';
+      });
+    }
+
+    htmlContent += "</div>";
+
+    $("#html-content").html(htmlContent);
     $("#conversion-result").show();
+    $("#docx-to-html-form").hide();
   }
 
   function handleError(err) {
@@ -51,6 +69,7 @@ jQuery(document).ready(function ($) {
 
   $("#create-post").on("click", function () {
     var content = $("#html-content").html();
+    var categories = $("#categories").val();
 
     $.ajax({
       url: docxToHtml.ajax_url,
@@ -60,13 +79,27 @@ jQuery(document).ready(function ($) {
         nonce: docxToHtml.nonce,
         content: content,
         title: fileName,
+        categories: categories,
       },
       success: function (response) {
+        var messageDiv = $("#post-message");
         if (response.success) {
-          alert("Post created successfully!");
+          messageDiv.html(
+            "<div class='updated msg-custom'>Le post a bien été crée!</div>"
+          );
         } else {
-          alert("Error creating post: " + response.data);
+          messageDiv.html(
+            "<div class='error'>Erreur msg-custom : " + response.data + "</div>"
+          );
         }
+        messageDiv.show();
+      },
+      error: function () {
+        var messageDiv = $("#post-message");
+        messageDiv.html(
+          "<div class='error msg-custom'>Une erreur inconnu est survenu.</div>"
+        );
+        messageDiv.show();
       },
     });
   });
