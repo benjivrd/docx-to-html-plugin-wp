@@ -2,7 +2,7 @@
 /*
 Plugin Name: DOCX to Post Converter
 Description: Convert DOCX files to Post, preview and validate before creating a new post.
-Version: 1.0
+Version: 1.3
 Author: Bendev
 */
 
